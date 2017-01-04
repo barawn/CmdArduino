@@ -55,9 +55,9 @@ static uint8_t *msg_ptr;
 static cmd_t *cmd_tbl_list, *cmd_tbl;
 
 // text strings for command prompt (stored in flash)
-const char cmd_banner[] PROGMEM = "*************** CMD *******************";
-const char cmd_prompt[] PROGMEM = "CMD >> ";
-const char cmd_unrecog[] PROGMEM = "CMD: Command not recognized.";
+const char *cmd_banner  __attribute__((weak)) = "*************** CMD *******************";
+const char *cmd_prompt  __attribute__((weak)) = "CMD >> ";
+const char *cmd_unrecog __attribute__((weak)) = "CMD: Command not recognized.";
 
 /**************************************************************************/
 /*!
@@ -66,15 +66,8 @@ const char cmd_unrecog[] PROGMEM = "CMD: Command not recognized.";
 /**************************************************************************/
 void cmd_display()
 {
-    char buf[50];
-
-    Serial.println();
-
-    strcpy_P(buf, cmd_banner);
-    Serial.println(buf);
-
-    strcpy_P(buf, cmd_prompt);
-    Serial.print(buf);
+  Serial.println();
+  Serial.print(cmd_prompt);
 }
 
 /**************************************************************************/
@@ -91,7 +84,8 @@ void cmd_parse(char *cmd)
     char buf[50];
     cmd_t *cmd_entry;
 
-    fflush(stdout);
+    // I dunno why this was here.
+    //fflush(stdout);
 
     // parse the command line statement and break it up into space-delimited
     // strings. the array of strings will be saved in the argv array.
@@ -110,8 +104,8 @@ void cmd_parse(char *cmd)
     {
         if (!strcmp(argv[0], cmd_entry->cmd))
         {
-            cmd_entry->func(argc, argv);
-            cmd_display();
+	    if(!(cmd_entry->func(argc, argv)))
+	      cmd_display();
             return;
         }
     }
@@ -146,19 +140,36 @@ void cmd_handler()
         break;
     
     case '\b':
-        // backspace 
-        Serial.print(c);
-        if (msg_ptr > msg)
-        {
-            msg_ptr--;
-        }
-        break;
-    
+      // Backspace has to do a few things.
+      // First, check to make sure we're not at the beginning.
+      // If we're at the beginning, we ignore everything.
+      if (msg_ptr > msg) {
+	// Now, send backspace...
+	Serial.write(c);
+	// and a ' ' character...
+	Serial.write(' ');
+	// and another backspace
+	Serial.write(c);
+	// Now actually back up the pointer.
+	msg_ptr--;
+      }
+      break;	
     default:
-        // normal character entered. add it to the buffer
-        Serial.print(c);
-        *msg_ptr++ = c;
-        break;
+      // Check to see if we've gone too far.
+      if (msg_ptr - msg == MAX_MSG_SIZE-1) {
+	// This is the last available spot: e.g. if
+	// MAX_MSG_SIZE = 16, this happens when
+	// msg_ptr = msg + 15. 
+	// The last slot is always reserved for the null
+	// terminator, so we have to actually back up one more.
+	msg_ptr--;
+	Serial.print('\b');
+	*msg_ptr = c;
+      } else {
+	*msg_ptr++ = c;
+      }
+      Serial.print(c);
+      break;
     }
 }
 
@@ -192,6 +203,9 @@ void cmdInit(uint32_t speed)
 
     // set the serial speed
     Serial.begin(speed);
+    Serial.println();
+    Serial.println(cmd_banner);
+    Serial.print(cmd_prompt);
 }
 
 /**************************************************************************/
@@ -200,7 +214,7 @@ void cmdInit(uint32_t speed)
     at the setup() portion of the sketch. 
 */
 /**************************************************************************/
-void cmdAdd(char *name, void (*func)(int argc, char **argv))
+void cmdAdd(char *name, int (*func)(int argc, char **argv))
 {
     // alloc memory for command struct
     cmd_tbl = (cmd_t *)malloc(sizeof(cmd_t));
@@ -230,4 +244,8 @@ void cmdAdd(char *name, void (*func)(int argc, char **argv))
 uint32_t cmdStr2Num(char *str, uint8_t base)
 {
     return strtol(str, NULL, base);
+}
+
+void cmdPrompt() {
+  cmd_display();
 }

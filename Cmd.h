@@ -44,17 +44,24 @@
 #define MAX_MSG_SIZE    60
 #include <stdint.h>
 
+// I really need to fix this crap.
+
+extern const char *cmd_banner;
+extern const char *cmd_prompt;
+extern const char *cmd_unrecog;
+
 // command line structure
 typedef struct _cmd_t
 {
     char *cmd;
-    void (*func)(int argc, char **argv);
+    int (*func)(int argc, char **argv);
     struct _cmd_t *next;
 } cmd_t;
 
 void cmdInit(uint32_t speed);
 void cmdPoll();
-void cmdAdd(char *name, void (*func)(int argc, char **argv));
+void cmdAdd(char *name, int (*func)(int argc, char **argv));
+void cmdPrompt();
 uint32_t cmdStr2Num(char *str, uint8_t base);
 
 #endif //CMD_H
