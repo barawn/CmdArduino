@@ -47,7 +47,7 @@ void loop()
 // Arg 7: 4
 // Arg 8: 5
 // Arg 9: yay
-void arg_display(int arg_cnt, char **args)
+int arg_display(int arg_cnt, char **args)
 {
   for (int i=0; i<arg_cnt; i++)
   {
@@ -56,4 +56,5 @@ void arg_display(int arg_cnt, char **args)
     Serial.print(": ");
     Serial.println(args[i]);
   }
+  return 0;
 }

@@ -32,7 +32,8 @@ void loop()
 // hello
 //
 // That's it. 
-void hello(int arg_cnt, char **args)
+int hello(int arg_cnt, char **args)
 {
   Serial.println("Hello world.");
+  return 0;
 }

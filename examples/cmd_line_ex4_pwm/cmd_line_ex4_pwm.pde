@@ -51,7 +51,7 @@ void loop()
 // Similar to ex3, when you use numeric arguments, you'll need to use the
 // cmdStr2Num function to convert the numeric string into a usable integer.
 // See ex3 or the tutorial for more information on this function. 
-void led_pwm(int arg_cnt, char **args)
+int led_pwm(int arg_cnt, char **args)
 {
   int pwm_val;
   
@@ -66,4 +66,5 @@ void led_pwm(int arg_cnt, char **args)
     // if no args, turn off the LED
     analogWrite(pwm_pin, 0);
   }
+  return 0;
 }

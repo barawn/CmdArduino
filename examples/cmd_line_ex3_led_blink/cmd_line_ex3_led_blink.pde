@@ -69,7 +69,7 @@ void loop()
 // to an integer. When you call cmdStr2Num, you need to specify two arguments:
 // 1) the numeric string to be converted
 // 2) the numeric base that will be used to convert it,ie: 10 = decimal, 16 = hex
-void led_blink(int arg_cnt, char **args)
+int led_blink(int arg_cnt, char **args)
 {
   if (arg_cnt > 1)
   {
@@ -79,7 +79,8 @@ void led_blink(int arg_cnt, char **args)
   else
   {
     led_blink_enb = false;
-  } 
+  }
+  return 0;
 }
 
 
