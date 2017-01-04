@@ -52,9 +52,10 @@ void loop()
 // 
 // Usage:
 // hello
-void hello(int arg_cnt, char **args)
+int hello(int arg_cnt, char **args)
 {
   Serial.println("Hello world.");
+  return 0;
 }
 
 // Display the contents of the args string array. 
@@ -71,7 +72,7 @@ void hello(int arg_cnt, char **args)
 // Arg 4: hello
 // Arg 5: gothic
 // Arg 6: baby
-void arg_display(int arg_cnt, char **args)
+int arg_display(int arg_cnt, char **args)
 {
   for (int i=0; i<arg_cnt; i++)
   {
@@ -80,6 +81,7 @@ void arg_display(int arg_cnt, char **args)
     Serial.print(": ");
     Serial.println(args[i]);
   }
+  return 0;
 }
 
 // Blink the LED with the delay time specified in the args.
@@ -93,7 +95,7 @@ void arg_display(int arg_cnt, char **args)
 // blink
 //
 // Turns off the LED.
-void led_blink(int arg_cnt, char **args)
+int led_blink(int arg_cnt, char **args)
 {
   if (arg_cnt > 1)
   {
@@ -103,7 +105,8 @@ void led_blink(int arg_cnt, char **args)
   else
   {
     led_blink_enb = false;
-  } 
+  }
+  return 0;
 }
 
 // This function sets the brightness of an LED on pin 10 via PWM from the 
@@ -118,7 +121,7 @@ void led_blink(int arg_cnt, char **args)
 // pwm
 //
 // Turns off the LED
-void led_pwm(int arg_cnt, char **args)
+int led_pwm(int arg_cnt, char **args)
 {
   int pwm_val;
   
@@ -133,4 +136,5 @@ void led_pwm(int arg_cnt, char **args)
     // if no args, turn off the LED
     analogWrite(pwm_pin, 0);
   }
+  return 0;
 }
